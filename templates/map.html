@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ICC Mowing - Parks Map (Ipswich, QLD)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style> 
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+    
+    .map-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+    }
+    
+    .legend h4 {
+      margin: 0 0 10px 0;
+      color: #2d572c;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    
+    .park-popup {
+      font-family: Arial, sans-serif;
+    }
+    
+    .park-popup h3 {
+      margin: 0 0 8px 0;
+      color: #2d572c;
+    }
+    
+    .park-popup .detail {
+      margin: 3px 0;
+      font-size: 13px;
+    }
+    
+    .park-popup .priority {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: white;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    
+    .priority-1 { background: #dc3545; }
+    .priority-2 { background: #fd7e14; }  
+    .priority-3 { background: #ffc107; color: #000; }
+    .priority-4 { background: #28a745; }
+    .priority-5 { background: #6f42c1; }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <h3>🗺️ Loading Parks Map...</h3>
+    <p>Fetching park locations in Ipswich, QLD</p>
+  </div>
+  
+  <div class="map-controls">
+    <button onclick="goBack()">← Back to Dashboard</button>
+  </div>
+  
+  <div class="legend">
+    <h4>Park Priority</h4>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #dc3545;"></div>
+      <span>Priority 1 (Urgent)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #fd7e14;"></div>
+      <span>Priority 2 (High)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #ffc107;"></div>
+      <span>Priority 3 (Normal)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #28a745;"></div>
+      <span>Priority 4 (Low)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #6f42c1;"></div>
+      <span>Priority 5 (Very Low)</span>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    async function init() {
+      try {
+        const res = await fetch("/api/parks");
+        const parks = await res.json();
+        
+        // Initialize map centered on Ipswich, QLD
+        const map = L.map('map').setView([-27.6149, 152.7594], 12);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+          attribution: '&copy; OpenStreetMap contributors',
+          maxZoom: 18
+        }).addTo(map);
+        
+        // Add satellite layer option
+        const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '&copy; Esri',
+          maxZoom: 18
+        });
+        
+        // Layer control
+        const baseMaps = {
+          "Street Map": map._layers[Object.keys(map._layers)[0]],
+          "Satellite": satellite
+        };
+        
+        L.control.layers(baseMaps).addTo(map);
+        
+        // Color mapping for priorities
+        const priorityColors = {
+          1: '#dc3545', // Red - Urgent
+          2: '#fd7e14', // Orange - High  
+          3: '#ffc107', // Yellow - Normal
+          4: '#28a745', // Green - Low
+          5: '#6f42c1'  // Purple - Very Low
+        };
+        
+        let validParks = 0;
+        let totalParks = parks.length;
+        
+        // Add markers for each park
+        parks.forEach(park => {
+          const lat = park.latitude;
+          const lon = park.longitude;
+          
+          if (!lat || !lon) {
+            console.log(`Skipping ${park.name} - no coordinates`);
+            return;
+          }
+          
+          validParks++;
+          
+          // Determine marker color based on priority
+          const priority = park.priority || 3;
+          const color = priorityColors[priority] || '#ffc107';
+          
+          // Create custom marker
+          const marker = L.circleMarker([lat, lon], {
+            radius: 8,
+            fillColor: color,
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+          }).addTo(map);
+          
+          // Format size display
+          const sizeText = park.size_sqm ? 
+            `${park.size_sqm.toLocaleString()} sqm` : 
+            'Size unknown';
+          
+          // Difficulty stars
+          const difficulty = park.difficulty || 3;
+          const difficultyStars = '★'.repeat(difficulty) + '☆'.repeat(5 - difficulty);
+          
+          // Create popup content
+          const popupContent = `
+            <div class="park-popup">
+              <h3>${park.name}</h3>
+              <div class="detail"><strong>📍 Suburb:</strong> ${park.suburb}</div>
+              <div class="detail"><strong>📐 Size:</strong> ${sizeText}</div>
+              <div class="detail"><strong>⭐ Difficulty:</strong> ${difficultyStars} (${difficulty}/5)</div>
+              <div class="detail">
+                <strong>🎯 Priority:</strong> 
+                <span class="priority priority-${priority}">${priority}</span>
+              </div>
+              <div class="detail"><strong>🆔 Park ID:</strong> ${park.id}</div>
+            </div>
+          `;
+          
+          marker.bindPopup(popupContent);
+          
+          // Add hover effect
+          marker.on('mouseover', function(e) {
+            this.setStyle({
+              radius: 10,
+              weight: 3
+            });
+          });
+          
+          marker.on('mouseout', function(e) {
+            this.setStyle({
+              radius: 8,
+              weight: 2
+            });
+          });
+        });
+        
+        // Add summary info to map
+        const summaryControl = L.control({position: 'topright'});
+        summaryControl.onAdd = function(map) {
+          const div = L.DomUtil.create('div', 'info');
+          div.innerHTML = `
+            <h4>📊 Parks Summary</h4>
+            <p><strong>Total Parks:</strong> ${totalParks}</p>
+            <p><strong>Mapped Parks:</strong> ${validParks}</p>
+            <p><strong>Coverage:</strong> ${Math.round(validParks/totalParks*100)}%</p>
+          `;
+          div.style.background = 'white';
+          div.style.padding = '10px';
+          div.style.borderRadius = '5px';
+          div.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+          div.style.fontFamily = 'Arial, sans-serif';
+          div.style.fontSize = '13px';
+          return div;
+        };
+        summaryControl.addTo(map);
+        
+        // If we have parks with coordinates, fit the map to show them all
+        if (validParks > 0) {
+          const group = new L.featureGroup(map._layers);
+          if (Object.keys(group._layers).length > 1) {
+            map.fitBounds(group.getBounds().pad(0.1));
+          }
+        }
+        
+        // Hide loading indicator
+        document.getElementById('loading').style.display = 'none';
+        
+        console.log(`Map initialized with ${validParks}/${totalParks} parks displayed`);
+        
+      } catch (error) {
+        console.error('Error loading parks:', error);
+        document.getElementById('loading').innerHTML = `
+          <h3>❌ Error Loading Map</h3>
+          <p>Failed to load park data: ${error.message}</p>
+          <button onclick="location.reload()">Try Again</button>
+        `;
+      }
+    }
+    
+    function goBack() {
+      window.close();
+      // Fallback if window.close() doesn't work
+      window.history.back();
+    }
+    
+    // Initialize when page loads
+    init();
+  </script>
+</body>
+</html>

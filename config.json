@@ -1,0 +1,92 @@
+{
+  "business_settings": {
+    "business_name": "ICC Mowing Services",
+    "service_area": "Ipswich, QLD",
+    "currency": "AUD",
+    "timezone": "Australia/Brisbane"
+  },
+  "work_schedule": {
+    "work_days_per_week": 5,
+    "work_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "start_time": "06:30",
+    "end_time": "14:45",
+    "lunch_break_duration": 0.8,
+    "include_weekends": false,
+    "weekend_premium": 1.3
+  },
+  "team_defaults": {
+    "max_daily_hours": 6.0,
+    "overtime_allowed": true,
+    "max_overtime_hours": 2.0,
+    "base_hourly_rate": 29.0,
+    "overtime_multiplier": 1.5,
+    "default_mowing_rate_sqm_per_hour": 1000.0,
+    "travel_time_same_suburb": 15,
+    "travel_time_different_suburb": 30
+  },
+  "equipment_rates": {
+    "commercial_mower": {
+      "sqm_per_hour": 1500,
+      "efficiency_factor": 1.0,
+      "maintenance_cost_per_hour": 5.0
+    },
+    "ride_on_mower": {
+      "sqm_per_hour": 800,
+      "efficiency_factor": 1.0,
+      "maintenance_cost_per_hour": 3.5
+    },
+    "zero_turn_mower": {
+      "sqm_per_hour": 1200,
+      "efficiency_factor": 0.9,
+      "maintenance_cost_per_hour": 6.0
+    },
+    "walk_behind_mower": {
+      "sqm_per_hour": 500,
+      "efficiency_factor": 1.2,
+      "maintenance_cost_per_hour": 2.0
+    }
+  },
+  "difficulty_multipliers": {
+    "1": 0.8,
+    "2": 0.9,
+    "3": 1.0,
+    "4": 1.2,
+    "5": 1.5
+  },
+  "weather_settings": {
+    "api_key": "your_weather_api_key_here",
+    "check_weather": true,
+    "rain_threshold": 70,
+    "wind_threshold": 25,
+    "temperature_min": 5,
+    "temperature_max": 35,
+    "reschedule_on_bad_weather": true
+  },
+  "optimization_settings": {
+    "max_parks_per_team_per_day": 8,
+    "priority_weight": 2.0,
+    "urgency_weight": 1.5,
+    "travel_cost_weight": 1.0,
+    "minimum_job_duration": 0.25,
+    "setup_cleanup_time": 0.25
+  },
+  "reporting": {
+    "include_costs": true,
+    "include_weather": true,
+    "include_maps": true,
+    "export_format": "excel",
+    "chart_colors": [
+      "#667eea",
+      "#764ba2",
+      "#f093fb",
+      "#f5576c",
+      "#4facfe"
+    ]
+  }
+}

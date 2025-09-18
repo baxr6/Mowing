@@ -1,0 +1,26 @@
+name,suburb,latitude,longitude,size_sqm,difficulty,priority,last_mowed
+Anzac Park,Ipswich Central,-27.614892,152.759412,15000,3,3,2024-01-15
+Lions Park,West Ipswich,-27.618234,152.752567,8500,2,2,2024-01-10
+Heritage Park,Booval,-27.608456,152.785234,45000,4,3,2023-12-28
+Queens Park,East Ipswich,-27.612034,152.765123,6500,2,3,2024-01-20
+Rotary Park,North Ipswich,-27.605123,152.758234,12000,3,2,2024-01-08
+Pioneer Park,Bundamba,-27.598456,152.772345,35000,4,3,2024-01-05
+Memorial Park,Goodna,-27.600123,152.745234,28000,4,4,2023-12-30
+Central Park,Redbank,-27.595234,152.875123,85000,5,3,2024-01-12
+Victory Park,Raceview,-27.630234,152.780123,9500,3,3,2024-01-18
+Jacaranda Park,Yamanto,-27.645123,152.790234,7200,2,3,2024-01-14
+Riverside Park,Leichhardt,-27.580234,152.730123,18000,3,2,2024-01-07
+Discovery Park,One Mile,-27.590123,152.740234,22000,3,4,2024-01-16
+Eucalyptus Park,Silkstone,-27.620234,152.730123,14500,3,3,2023-12-25
+Federation Park,Brassall,-27.610123,152.765234,11000,3,3,2024-01-11
+Unity Park,Sadliers Crossing,-27.585234,152.755123,32000,4,3,2024-01-03
+Wattle Park,Ipswich Central,-27.615123,152.759823,5500,2,2,2024-01-19
+Botanical Park,West Ipswich,-27.618723,152.752123,16500,3,4,2024-01-09
+Adventure Park,Booval,-27.608823,152.785567,4200,1,1,2024-01-22
+Peace Park,East Ipswich,-27.612456,152.765456,19000,3,3,2024-01-06
+Community Park,North Ipswich,-27.605456,152.758567,3800,1,3,2024-01-17
+Environmental Park,Bundamba,-27.598723,152.772678,25000,4,4,2024-01-04
+Centenary Park,Goodna,-27.600456,152.745567,13500,3,3,2024-01-13
+Orion Park,Redbank,-27.595567,152.875456,7800,2,2,2024-01-21
+Family Park,Raceview,-27.630567,152.780456,10500,3,3,2024-01-02
+Banksia Park,Yamanto,-27.645456,152.790567,6800,2,3,2024-01-23
